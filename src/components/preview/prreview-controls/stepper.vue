@@ -1,21 +1,29 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { invoke } from "@tauri-apps/api/core";
 
 import BaseControl from "./baseControl.vue";
+import { Stepper } from "../../../model/uiElementsInputs";
 
-const values = ref(["Val1", "Val2", "Val3"]);
-let currentValue = ref(0);
-let leftArrowVisible = ref(false);
-let rightArrowVisible = ref(values.value.length > 0);
+const props = defineProps<{
+    model: Stepper
+}>()
+
+const emit = defineEmits<{
+  hovered: [description: string],
+  unhovered: []
+}>()
+
+let currentValue = ref(props.model.getValue())
+let leftArrowVisible = ref(currentValue.value !== 0);
+let rightArrowVisible = ref(props.model.options.length > 0);
 
 const updateArrowsStatus = () => {
     leftArrowVisible.value = currentValue.value !== 0;
-    rightArrowVisible.value = currentValue.value !== values.value.length-1;
+    rightArrowVisible.value = currentValue.value !== props.model.options.length-1;
 }
 
 const switchValueLooped = () => {
-    const max_index = values.value.length-1;
+    const max_index = props.model.options.length-1;
     currentValue.value = currentValue.value === max_index ? 0 : currentValue.value+1;
     updateArrowsStatus();
 }
@@ -26,7 +34,7 @@ const switchToPrevValue = () => {
     }
 }
 const switchToNextValue = () => {
-    if(currentValue.value < values.value.length-1) {
+    if(currentValue.value < props.model.options.length-1) {
         currentValue.value = currentValue.value+1;
         updateArrowsStatus();
     }
@@ -35,12 +43,12 @@ const switchToNextValue = () => {
 </script>
 
 <template>
-    <BaseControl>
+    <BaseControl :label=model.text @hovered="$emit('hovered', model.help)" @unhovered="$emit('unhovered')">
         <div
             class="stepper mcm-input"
             :class="{ leftArrow: leftArrowVisible, rightArrow: rightArrowVisible }"
         >
-            <p class="preview-before-after">{{ values[currentValue] }}</p>
+            <p class="preview-before-after">{{ model.options[currentValue] }}</p>
             <div class="left-btn" @click="switchToPrevValue"></div>
             <div class="right-btn" @click="switchToNextValue"></div>
         </div>

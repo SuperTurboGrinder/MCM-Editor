@@ -1,14 +1,19 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { invoke } from "@tauri-apps/api/core";
 
+const props = defineProps<{
+    label: string
+}>()
 
+const emit = defineEmits<{
+  hovered: [],
+  unhovered: []
+}>()
 
 </script>
 
 <template>
-    <div class="preview-control base-control">
-        <p>Test text</p>
+    <div class="preview-control base-control" @mouseenter="$emit('hovered')" @mouseleave="$emit('unhovered')">
+        <p>{{ label }}</p>
         <slot></slot>
     </div>
 </template>
@@ -19,8 +24,7 @@ import { invoke } from "@tauri-apps/api/core";
     justify-content: space-between;
     width: 100%;
     text-align: left;
-    font-weight: 600;
-    padding: 5px 25px;
+    padding: 5px 15px;
 }
 </style>
 

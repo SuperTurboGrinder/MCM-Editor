@@ -1,25 +1,31 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { invoke } from "@tauri-apps/api/core";
 
 import BaseControl from "./baseControl.vue";
+import { Slider } from "../../../model/uiElementsInputs";
 
-let sliderValue = ref(0);
-const sliderMin = ref(-10);
-const sliderMax = ref(10);
-const sliderStep = ref(1);
+const props = defineProps<{
+    model: Slider
+}>()
+
+const emit = defineEmits<{
+  hovered: [description: string],
+  unhovered: []
+}>()
+
+let sliderValue = ref(props.model.defaultValue);
 
 </script>
 
 <template>
-    <BaseControl>
+    <BaseControl :label=model.text @hovered="$emit('hovered', model.help)" @unhovered="$emit('unhovered')">
         <div class="slider-container">
             <p>{{ sliderValue }}</p>
             <input
                 type="range"
-                :min="sliderMin"
-                :max="sliderMax"
-                :step="sliderStep"
+                :min="model.min"
+                :max="model.max"
+                :step="model.step"
                 v-model="sliderValue"
                 class="slider preview-border preview-before-after mcm-input"
             >

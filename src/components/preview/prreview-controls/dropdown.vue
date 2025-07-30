@@ -1,11 +1,20 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { invoke } from "@tauri-apps/api/core";
 
 import BaseControl from "./baseControl.vue";
+import { Dropdown } from "../../../model/uiElementsInputs";
 
-const values = ref(["Val1", "Val2", "Val3"]);
-let currentValue = ref(0);
+const props = defineProps<{
+    model: Dropdown
+}>()
+
+const emit = defineEmits<{
+  hovered: [description: string],
+  unhovered: []
+}>()
+
+
+let currentValue = ref(props.model.options.indexOf(props.model.defaultValue));
 let open = ref(false);
 
 const openDropdown = () => open.value = true;
@@ -18,20 +27,20 @@ const setCurrent = (index:number) => {
 </script>
 
 <template>
-    <BaseControl>
+    <BaseControl :label=model.text @hovered="$emit('hovered', model.help)" @unhovered="$emit('unhovered')">
         <div
             class="dropdown mcm-input"
             :class="{open: open}"
             @blur="closeDropdown"
             tabindex="0"
         >
-            <p class="preview-border">{{ values[currentValue] }}</p>
+            <p class="preview-border">{{ model.options[currentValue] }}</p>
             <div class="open-button" @click="openDropdown"></div>
             <div class="dropdown-body preview-color-override">
                 <div class="background preview-before-after"></div>
                 <div
                     class="entry preview-control"
-                    v-for="(entry, index) in values"
+                    v-for="(entry, index) in model.options"
                     @click="setCurrent(index)"
                 >
                     <p>{{ entry }}</p>

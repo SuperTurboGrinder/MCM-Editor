@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { invoke } from "@tauri-apps/api/core";
+import { Section } from "../../../model/uiElementsStatic";
+
+const props = defineProps<{
+    model: Section
+}>()
 
 </script>
 
 <template>
     <div class="section">
         <div class="title">
-            <p>Section title</p>
+            <p>{{ model.text }}</p>
         </div>
     </div>
 </template>
@@ -28,7 +31,6 @@ import { invoke } from "@tauri-apps/api/core";
     display: flex;
     width: max-content;
     white-space: nowrap;
-    font-weight: 600;
     width: 100%;
 }
 .section .title > p::after {

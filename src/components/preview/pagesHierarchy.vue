@@ -1,30 +1,36 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { invoke } from "@tauri-apps/api/core";
+import { computed, ref } from "vue";
+import { MainPage, SecondaryPage } from "../../model/page";
+import { BaseUIElement } from "../../model/uiElementsBase";
 
-const pages = ref([
-    "Main Page",
-    "Secondary page1",
-    "Secondary page2",
-    "Secondary page3",
-    "Secondary page4"
-]);
+const props = defineProps<{
+    mainPage: MainPage;
+}>()
+
+const emit = defineEmits<{
+    updateContent: [pageContent: BaseUIElement[]]
+}>()
+
+const pages = computed(() => [props.mainPage as SecondaryPage, ...props.mainPage.pages.map((p)=>p as SecondaryPage)])
 const activePage = ref(0);
 
-const switchPage = (n: number) => activePage.value = n;
+const switchPage = (n: number) => {
+    activePage.value = n;
+    emit('updateContent', pages.value[activePage.value].content)
+}
 
 </script>
 
 <template>
     <div class="hierarchy">
         <div
-            v-for="(pageName, index) in pages"
+            v-for="(page, index) in pages"
             :class="{main: index===0, selected: index===activePage}"
-            :key="pageName"
+            :key="page.displayName"
             @click="switchPage(index)"
             class="preview-control page-selector"
         >
-            <p>{{ pageName }}</p>
+            <p>{{ page.displayName }}</p>
         </div>
     </div>
 </template>

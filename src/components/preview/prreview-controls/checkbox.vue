@@ -1,17 +1,26 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { invoke } from "@tauri-apps/api/core";
 
 import BaseControl from "./baseControl.vue";
+import { Switcher } from "../../../model/uiElementsInputs";
 
-const status = ref(true);
+const props = defineProps<{
+    model: Switcher
+}>()
+
+const emit = defineEmits<{
+  hovered: [description: string],
+  unhovered: []
+}>()
+
+const status = ref(props.model.defaultValue);
 
 const switchStatus = () => status.value = !status.value;
 
 </script>
 
 <template>
-    <BaseControl>
+    <BaseControl :label=model.text @hovered="$emit('hovered', model.help)" @unhovered="$emit('unhovered')">
         <div class="checkbox-switch mcm-input" :class="{on: status}" @click="switchStatus">
             <p v-if="status">ON</p>
             <p v-else>OFF</p>

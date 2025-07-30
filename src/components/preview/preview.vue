@@ -1,21 +1,31 @@
 <script setup lang="ts">
+
 import { ref } from "vue";
-import { invoke } from "@tauri-apps/api/core";
-
-import BaseControl from "./baseControl.vue";
-
 import PagesHierarchy from "./pagesHierarchy.vue";
 import PreviewMain from "./previewMain.vue";
+import { PreviewTestCase } from "./testCase";
+import { BaseUIElement } from "../../model/uiElementsBase";
+
+const testCase = new PreviewTestCase();
+
+const currentPageContent = ref(testCase.mainPage.content);
+
+const updateContent = (newPageContent: BaseUIElement[]) => currentPageContent.value = newPageContent;
 
 </script>
 
 <template>
     <div class="preview">
         <div class="pages">
-            <PagesHierarchy></PagesHierarchy>
+            <PagesHierarchy
+                :main-page="testCase.mainPage"
+                @update-content="updateContent"
+            />
         </div>
         <div class="main">
-            <PreviewMain></PreviewMain>
+            <PreviewMain
+                :page-content="currentPageContent"
+            />
         </div>
     </div>
 </template>
@@ -24,15 +34,21 @@ import PreviewMain from "./previewMain.vue";
 .preview {
     display: flex;
     justify-content: stretch;
+    box-sizing: border-box;
     height: 100%;
     width: 100%;
     color: #23dd45;
     background-color: #627267;
+    cursor: pointer;
 }
 .preview .main {
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: column;
     justify-content: space-between;
     height: 100%;
     width: 75%;
+    padding: 5px;
 }
 .preview .pages {
     height: 100%;
@@ -46,7 +62,8 @@ import PreviewMain from "./previewMain.vue";
     box-sizing: border-box;
     transition: 0.2s;
 }
-.preview-control p {
+.preview p {
+    font-weight: 600;
     cursor: pointer;
     user-select: none;
 }
@@ -98,5 +115,39 @@ import PreviewMain from "./previewMain.vue";
 .preview-control .preview-color-override .preview-before-after::before,
 .preview-control .preview-color-override .preview-before-after::after {
     color: #23dd45 !important;
+}
+
+
+.preview .preview-scrollable{
+    overflow-y: auto;
+    direction: rtl;
+}
+.preview .preview-scrollable > * {
+    direction: ltr;
+}
+.preview .preview-scrollable::-webkit-scrollbar-thumb {
+    background-color: #23dd45;
+}
+.preview .preview-scrollable:-webkit-scrollbar-track {
+    background-color: transparent;
+}
+.preview .preview-scrollable::-webkit-scrollbar {
+    width: 6px;
+}
+.preview .preview-scrollable::-webkit-scrollbar-button:single-button {
+    position: relative;
+    background-color: transparent;
+    display: block;
+    height: 6px;
+    width: 6px;
+    border: 3px solid transparent
+}
+/* Up */
+.preview .preview-scrollable::-webkit-scrollbar-button:single-button:vertical:decrement {
+    border-bottom: 3px solid #23dd45;
+}
+/* Down */
+.preview .preview-scrollable::-webkit-scrollbar-button:single-button:vertical:increment {
+    border-top: 3px solid #23dd45;
 }
 </style>
