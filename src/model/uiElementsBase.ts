@@ -1,5 +1,5 @@
 import { UIElementType } from "./enums";
-import { BaseValueOptions } from "./inputData";
+import { BaseValueOptions, INIID } from "./inputData";
 import { Validatable } from "./interfaces";
 
 export class BaseUIElement implements Validatable {
@@ -42,10 +42,10 @@ export class BaseControlUIElement extends LabeledUIElement implements Validatabl
 }
 
 export class ControlUIElement extends BaseControlUIElement implements Validatable {
-    id: string | null;
+    id: INIID | null;
     valueOptions: BaseValueOptions;
 
-    constructor(type: UIElementType, label: string, hint: string, valueOption: BaseValueOptions, id: string | null = null) {
+    constructor(type: UIElementType, label: string, hint: string, valueOption: BaseValueOptions, id: INIID | null = null) {
         super(type, label, hint);
         this.valueOptions = valueOption;
         this.id = id;
@@ -55,7 +55,7 @@ export class ControlUIElement extends BaseControlUIElement implements Validatabl
         return super.isValid()
             && this.valueOptions.isValid()
             && this.valueOptions.isINISetting()
-                ? !!this.id?.match("/[a-z0-9:_]/i") && (this.id?.match(/:/g) || [])?.length == 1
+                ? (this.id === null ? false : this.id.isValid())
                 : true;
     }
 }

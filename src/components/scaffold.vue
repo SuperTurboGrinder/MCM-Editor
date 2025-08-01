@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import { invoke } from "@tauri-apps/api/core";
 import Preview from "./preview/preview.vue";
+import PropertyEditor from "./propertyEditor/propertyEditor.vue";
 
 
 </script>
@@ -15,7 +16,9 @@ import Preview from "./preview/preview.vue";
             <Preview></Preview>
         </div>
     </div>
-    <div class="properties"></div>
+    <div class="properties">
+        <PropertyEditor/>
+    </div>
   </div>
 </template>
 

@@ -1,14 +1,20 @@
 <script setup lang="ts">
+import { inject } from "vue";
 import { Section } from "../../../model/uiElementsStatic";
+import { EventBusKey } from "../../../providerKeys";
 
 const props = defineProps<{
-    model: Section
+    model: Section,
+    currentlySelected: boolean
 }>()
+
+const eventBus = inject(EventBusKey);
+const updateSelection = () => eventBus?.emit("PreviewElementSelectionEvent", props.model);
 
 </script>
 
 <template>
-    <div class="section">
+    <div class="section" @click="updateSelection" :class="{selected:currentlySelected}">
         <div class="title">
             <p>{{ model.text }}</p>
         </div>
@@ -19,6 +25,10 @@ const props = defineProps<{
 .section {
     box-sizing: border-box;
     width: 100%;
+}
+.section.selected {
+    box-sizing: border-box;
+    border: 1px solid slateblue;
 }
 .section .title {
     display: block;

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { invoke } from "@tauri-apps/api/core";
+import { inject, Ref, ref } from "vue";
 
 import GenericElement from "./prreview-controls/genericElement.vue";
 import { BaseUIElement } from "../../model/uiElementsBase";
+import { EventBusKey } from "../../providerKeys";
 
 const props = defineProps<{
     pageContent: BaseUIElement[];
@@ -13,6 +13,11 @@ let description = ref("");
 const setDescription = (desc: string) => description.value = desc;
 const resetDescription = () => description.value = "";
 
+const currentlySelected: Ref<BaseUIElement | null> = ref(null);
+
+const eventBus = inject(EventBusKey);
+eventBus?.on("PreviewElementSelectionEvent", (newSelected: BaseUIElement | null) => currentlySelected.value = newSelected);
+
 </script>
 
 <template>
@@ -20,6 +25,7 @@ const resetDescription = () => description.value = "";
         <GenericElement
             v-for="model in pageContent"
             :model-base="model"
+            :currently-selected="model === currentlySelected"
             @update-description="setDescription"
             @clear-description="resetDescription"
         />

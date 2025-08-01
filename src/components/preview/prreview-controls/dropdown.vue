@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { inject, ref } from "vue";
 
 import BaseControl from "./baseControl.vue";
 import { Dropdown } from "../../../model/uiElementsInputs";
+import { EventBusKey } from "../../../providerKeys";
 
 const props = defineProps<{
-    model: Dropdown
+    model: Dropdown,
+    currentlySelected: boolean
 }>()
 
 const emit = defineEmits<{
@@ -24,10 +26,19 @@ const setCurrent = (index:number) => {
     closeDropdown();
 }
 
+const eventBus = inject(EventBusKey);
+const updateSelection = () => eventBus?.emit("PreviewElementSelectionEvent", props.model);
+
 </script>
 
 <template>
-    <BaseControl :label=model.text @hovered="$emit('hovered', model.help)" @unhovered="$emit('unhovered')">
+    <BaseControl
+        :label=model.text
+        :selected="currentlySelected"
+        @hovered="$emit('hovered', model.help)"
+        @unhovered="$emit('unhovered')"
+        @click="updateSelection"
+    >
         <div
             class="dropdown mcm-input"
             :class="{open: open}"

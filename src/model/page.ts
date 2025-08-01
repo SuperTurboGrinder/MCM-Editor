@@ -1,5 +1,6 @@
 import { Validatable } from "./interfaces.ts"
 import { BaseUIElement } from "./uiElementsBase.ts";
+import * as ValidationUtils from "./validationUtils"
 
 export class SecondaryPage implements Validatable {
     content: BaseUIElement[];
@@ -12,7 +13,6 @@ export class SecondaryPage implements Validatable {
 
     isValid(): boolean {
         return this.displayName != ""
-            && /[a-z0-9_]/i.test(this.displayName)
             && this.content.reduce(
                 (accum, val) => accum && val.isValid(),
                 true
@@ -33,7 +33,8 @@ export class MainPage extends SecondaryPage {
 
     isValid(): boolean {
         return super.isValid()
-            && /[a-z0-9_]/i.test(this.modName)
+            && ValidationUtils.isProperWindowsFileName(this.modName)
+            && !ValidationUtils.hasFileExtension(this.modName, ['esl', 'esp'])
             && this.minMcmVersion >= 1
             && this.pages.reduce(
                 (accum, val) => accum && val.isValid(),

@@ -1,18 +1,27 @@
 <script setup lang="ts">
 
+
 const props = defineProps<{
-    label: string
+    label: string,
+    selected: boolean
 }>()
 
 const emit = defineEmits<{
   hovered: [],
-  unhovered: []
+  unhovered: [],
+  click: []
 }>()
 
 </script>
 
 <template>
-    <div class="preview-control base-control" @mouseenter="$emit('hovered')" @mouseleave="$emit('unhovered')">
+    <div
+        class="preview-control base-control"
+        @mouseenter="$emit('hovered')"
+        @mouseleave="$emit('unhovered')"
+        @click="$emit('click')"
+        :class="{currentlySelected: selected}"
+    >
         <p>{{ label }}</p>
         <slot></slot>
     </div>
@@ -25,6 +34,11 @@ const emit = defineEmits<{
     width: 100%;
     text-align: left;
     padding: 5px 15px;
+}
+
+.base-control.currentlySelected {
+    box-sizing: border-box;
+    border: 1px solid slateblue;
 }
 </style>
 

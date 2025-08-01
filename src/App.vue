@@ -34,7 +34,7 @@ async function greet() {
       <button type="submit">Greet</button>
     </form>
     <p>{{ greetMsg }}</p> -->
-    <scaffold></scaffold>
+    <scaffold/>
   </main>
 </template>
 

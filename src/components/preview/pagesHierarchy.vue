@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, inject, ref } from "vue";
 import { MainPage, SecondaryPage } from "../../model/page";
 import { BaseUIElement } from "../../model/uiElementsBase";
+import { EventBusKey } from "../../providerKeys";
 
 const props = defineProps<{
     mainPage: MainPage;
@@ -11,12 +12,18 @@ const emit = defineEmits<{
     updateContent: [pageContent: BaseUIElement[]]
 }>()
 
+const eventBus = inject(EventBusKey);
+
 const pages = computed(() => [props.mainPage as SecondaryPage, ...props.mainPage.pages.map((p)=>p as SecondaryPage)])
 const activePage = ref(0);
 
 const switchPage = (n: number) => {
-    activePage.value = n;
-    emit('updateContent', pages.value[activePage.value].content)
+    if(activePage.value != n) {
+        activePage.value = n;
+        emit('updateContent', pages.value[activePage.value].content)
+        eventBus?.emit("PreviewElementSelectionEvent", null);
+        eventBus?.emit("PreviewPageSelectionEvent", pages.value[activePage.value]);
+    }
 }
 
 </script>

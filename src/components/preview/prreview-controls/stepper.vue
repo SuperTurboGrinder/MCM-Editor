@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { inject, ref } from "vue";
 
 import BaseControl from "./baseControl.vue";
 import { Stepper } from "../../../model/uiElementsInputs";
+import { EventBusKey } from "../../../providerKeys";
 
 const props = defineProps<{
-    model: Stepper
+    model: Stepper,
+    currentlySelected: boolean
 }>()
 
 const emit = defineEmits<{
@@ -22,11 +24,11 @@ const updateArrowsStatus = () => {
     rightArrowVisible.value = currentValue.value !== props.model.options.length-1;
 }
 
-const switchValueLooped = () => {
-    const max_index = props.model.options.length-1;
-    currentValue.value = currentValue.value === max_index ? 0 : currentValue.value+1;
-    updateArrowsStatus();
-}
+// const switchValueLooped = () => {
+//     const max_index = props.model.options.length-1;
+//     currentValue.value = currentValue.value === max_index ? 0 : currentValue.value+1;
+//     updateArrowsStatus();
+// }
 const switchToPrevValue = () => {
     if(currentValue.value !== 0) {
         currentValue.value = currentValue.value-1;
@@ -40,10 +42,19 @@ const switchToNextValue = () => {
     }
 }
 
+const eventBus = inject(EventBusKey);
+const updateSelection = () => eventBus?.emit("PreviewElementSelectionEvent", props.model);
+
 </script>
 
 <template>
-    <BaseControl :label=model.text @hovered="$emit('hovered', model.help)" @unhovered="$emit('unhovered')">
+    <BaseControl
+        :label=model.text
+        :selected="currentlySelected"
+        @hovered="$emit('hovered', model.help)"
+        @unhovered="$emit('unhovered')"
+        @click="updateSelection"
+    >
         <div
             class="stepper mcm-input"
             :class="{ leftArrow: leftArrowVisible, rightArrow: rightArrowVisible }"

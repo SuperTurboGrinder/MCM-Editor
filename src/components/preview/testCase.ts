@@ -9,7 +9,7 @@ export class PreviewTestCase {
     mainPage: MainPage;
 
     constructor() {
-        const testSpacer = new StaticElementsModel.Spacer(StaticElementsModel.SpacerType.InLines, 4);
+        const testSpacer = new StaticElementsModel.Spacer(StaticElementsModel.SpacerType.InPixels, 4);
         const testSection = new StaticElementsModel.Section("Demo section");
         const testStrWithHtmlTags = "Test <b>formatted</b> text <i>line</i> with <u>html</u> tags.";
         const testText1 = new StaticElementsModel.Text(testStrWithHtmlTags);

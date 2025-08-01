@@ -1,5 +1,6 @@
 import { DataSourceType } from "./enums";
 import { Validatable } from "./interfaces";
+import * as ValidationUtils from "./validationUtils"
 
 
 export class SourceForm implements Validatable {
@@ -12,14 +13,31 @@ export class SourceForm implements Validatable {
     }
 
     isValid() : boolean {
-        return this.file.length > 4
-            && /[a-z0-9._]/i.test(this.file)
-            && (this.file.endsWith('.esm') || this.file.endsWith('.esp'))
+        return ValidationUtils.isBethesdaPluginFilename(this.file)
             && this.id !== 0x0;
     }
 
     getValue(): string {
         return this.file + '|' + this.id.toString(16);
+    }
+}
+
+export class INIID implements Validatable {
+    section: string;
+    id: string;
+
+    constructor(section: string, id: string) {
+        this.section = section;
+        this.id = id;
+    }
+
+    isValid() : boolean {
+        return ValidationUtils.isProperVariableName(this.section)
+            && ValidationUtils.isProperVariableName(this.id)
+    }
+
+    getValue(): string {
+        return this.id + ':' + this.section;
     }
 }
 
@@ -54,7 +72,9 @@ export class BaseValueOptions implements Validatable {
         const needsForm = this.isGlobal() || isProperty;
         return needsForm
             ? this.sourceForm?.isValid()
-                && isProperty ? !!this.propertyName?.match('/[a-z0-9_]/i') && this.propertyName !== "" : true
+                && isProperty
+                    ? (this.propertyName === null ? false : ValidationUtils.isProperVariableName(this.propertyName))
+                    : true
             : true;
     }
 }
@@ -78,7 +98,7 @@ class BaseAction implements Validatable{
     }
 
     isValid(): boolean {
-        return /[a-z0-9_]/i.test(this.function);
+        return ValidationUtils.isProperFunctionName(this.function);
     }
 }
 
@@ -95,7 +115,7 @@ export class CallFunctionAction extends BaseAction {
     isValid(): boolean {
         return super.isValid()
             && this.form.isValid()
-            && this.scriptName !== null ? /[a-z0-9_]/i.test(this.scriptName) : true;
+            && (this.scriptName === null ? true : ValidationUtils.isProperVariableName(this.scriptName))
     }
 }
 
@@ -109,6 +129,6 @@ export class CallGlobalFunctionAction extends BaseAction {
 
     isValid(): boolean {
         return super.isValid()
-            && /[a-z0-9_]/i.test(this.script);
+            && ValidationUtils.isProperVariableName(this.script)
     }
 }
